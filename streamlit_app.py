@@ -6,7 +6,7 @@ import random
 st.set_page_config(page_title="Koffee.ai Outreach Agent ☕", page_icon="☕", layout="centered")
 
 # Logo & Title
-st.image("assets/logo.jpeg", width=180)
+st.image("assets/logo.png", width=180)
 st.markdown("## ☕ Koffee.ai Outreach Agent")
 st.markdown("#### Grow your local business outreach with AI ✨")
 
