@@ -1,93 +1,59 @@
 import streamlit as st
-from googletrans import Translator
+from PIL import Image
 
-# Initialize translator
-translator = Translator()
+# Load logo
+logo = Image.open("assets/logo.jpeg")  # Make sure it's a rounded image
 
 # Page config
-st.set_page_config(page_title="Koffee.ai Outreach Agent", page_icon="☕", layout="centered")
+st.set_page_config(page_title="Koffee.ai Outreach Agent", page_icon="☕", layout="wide", initial_sidebar_state="expanded")
 
-# Header
-st.title("☕ Koffee.ai Outreach Agent")
-st.subheader("📢 Generate Outreach Messages for Businesses")
-
-# Input Form
-with st.form("outreach_form"):
-    target_category = st.text_input("Target Business Category", placeholder="e.g., Gym, Café, Clinic")
-    location = st.text_input("Target Location (City / State / Area)", placeholder="e.g., Kakinada, Andhra Pradesh")
-    max_reach = st.number_input("Max Businesses to Contact", min_value=1, max_value=500, value=100)
+# Sidebar
+with st.sidebar:
+    st.image(logo, width=150)
+    st.markdown("### Welcome to Koffee.ai Outreach Agent — Grow your business with AI 🚀")
     
-    region = st.selectbox(
-        "Target Region / Language",
-        [
-            "Andhra Pradesh → Telugu + English",
-            "Karnataka → Kannada + English",
-            "Tamil Nadu → Tamil + English",
-            "Telangana → Telugu + English",
-            "Kerala → Malayalam + English",
-            "Rest of India → English only"
-        ]
-    )
-    
-    special_offer_enabled = st.checkbox("Enable Special Offer")
-    special_offer_text = ""
-    if special_offer_enabled:
-        special_offer_text = st.text_area("Special Offer Text", placeholder="e.g., Get 25% off on first 3 months...")
+    category = st.selectbox("Business Category", ["Cafe", "Gym", "Salon", "Boutique", "Restaurant", "Hospital", "Other"])
+    if category == "Other":
+        category = st.text_input("Enter your category")
 
-    submit_btn = st.form_submit_button("Generate Outreach Messages 🚀")
+    state = st.selectbox("Select State", ["Andhra Pradesh", "Karnataka", "Telangana", "Tamil Nadu", "Kerala"])
+    city = st.text_input("Enter City")
 
-# Message Generator Logic
-if submit_btn:
-    # English base message
-    english_message = f"""
-    Hello {target_category} owner 👋,
+    max_contacts = st.slider("Max Businesses to Reach", 10, 100, 50)
 
-    Are you looking to boost your business in {location}?
+    language_option = st.selectbox("Preferred Language", ["Auto (Based on State)", "English", "Telugu", "Kannada", "Tamil", "Malayalam"])
 
-    We at Koffee.ai offer:
-    ✅ AI-powered Marketing Tools
-    ✅ AI Automation Services
-    ✅ AI SaaS solutions tailored to your business
+    special_offer = st.text_area("Special Offer (Optional)")
 
-    {"Special Offer: " + special_offer_text if special_offer_enabled else ""}
+    start = st.button("🚀 Start Outreach", use_container_width=True)
 
-    👉 Visit: https://koffee-ai-marketing.netlify.app
-    👉 WhatsApp: +91 99121 25596
-    👉 Email: koffee.ai.marketing@gmail.com
+# Main content
+st.title("📢 Koffee.ai Smart Outreach Dashboard")
 
-    Let’s grow your business with AI ☕!
-    """
+if start:
+    st.info("🔍 Collecting businesses from social media and web directories...")
+    progress = st.progress(0)
+    status_text = st.empty()
 
-    # Translate to local language
-    if "Andhra Pradesh" in region or "Telangana" in region:
-        local_lang = "te"  # Telugu
-    elif "Karnataka" in region:
-        local_lang = "kn"  # Kannada
-    elif "Tamil Nadu" in region:
-        local_lang = "ta"  # Tamil
-    elif "Kerala" in region:
-        local_lang = "ml"  # Malayalam
-    else:
-        local_lang = None  # English only
-    
-    if local_lang:
-        local_message = translator.translate(english_message, dest=local_lang).text
-    else:
-        local_message = "Not applicable (English only region)."
+    # Simulated steps
+    import time
+    steps = ["Collecting data", "Scraping contacts", "Generating messages", "Sending outreach", "Waiting for responses"]
+    for i, step in enumerate(steps):
+        status_text.markdown(f"**{step}...**")
+        time.sleep(1.2)
+        progress.progress((i+1)/len(steps))
 
-    # Output
-    st.success("✅ Messages Generated!")
+    st.success("✅ Outreach Completed!")
 
-    st.markdown("### 📩 English Message")
-    st.code(english_message)
+    st.markdown("### 📊 Outreach Summary")
+    st.dataframe({
+        "Business Name": ["ABC Cafe", "XYZ Gym"],
+        "Email Sent": ["Yes", "Yes"],
+        "WhatsApp Sent": ["Yes", "No"],
+        "DM Sent": ["No", "Yes"],
+        "Response Status": ["Pending", "Responded"],
+        "Meeting Booked": ["-", "✅"]
+    })
 
-    st.markdown(f"### 🌐 Local Language Message ({region})")
-    st.code(local_message)
-
-    st.markdown("### 💬 Combined Message")
-    combined_message = english_message + "\n\n" + local_message
-    st.code(combined_message)
-
-    # Copy button (Streamlit can't natively copy to clipboard, but user can copy from code block)
-    st.info("👉 Copy and send this message via WhatsApp, Email, Social DMs.")
-
+    st.markdown("---")
+    st.caption("Made with ☕ by Koffee.ai — AI-Powered Growth")
