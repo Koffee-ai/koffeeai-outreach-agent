@@ -57,27 +57,27 @@ display_tracker()
 
 
 # --- social_messenger.py ---
+import time
+
 def send_social_messages(social_links, en_msg, local_msg):
     for platform, link in social_links.items():
         try:
-            # This is a stub — actual messaging via automation APIs requires access tokens and platform permission.
             print(f"[SOCIAL] Sending message to {platform}: {link}")
             print(f"  English:\n{en_msg}")
             print(f"  Local:\n{local_msg}")
 
             # NOTE:
-            # - Instagram/Facebook: Use Facebook Graph API (https://developers.facebook.com/docs/messenger-platform)
-            # - LinkedIn: LinkedIn API has limited DM support. Alternatives include Puppeteer, TexAu, or PhantomBuster.
-            # - For real usage, handle login/auth, rate limits, and message templates.
+            # - Instagram/Facebook: Use Meta Graph API (https://developers.facebook.com/docs/messenger-platform)
+            # - LinkedIn: Use LinkedIn Messaging API or automation tools like TexAu, PhantomBuster, Puppeteer.
+            # - Login, cookies, sessions, and headless automation are needed for real DMs.
 
+            time.sleep(2)  # simulate sending delay
         except Exception as e:
             print(f"[SOCIAL ERROR] Failed to message on {platform}: {e}")
 
 
 # --- auto_responder.py ---
 def check_incoming_messages():
-    # Stub: In real implementation, this would poll email inbox or social platform APIs
-    # For now, simulate a response
     simulated_responses = [
         {"name": "Chai Adda", "email": "chai@adda.com", "platform": "email"},
         {"name": "FitZone Gym", "social": "https://instagram.com/fitzone"}
@@ -94,10 +94,9 @@ def handle_responses():
 
         if 'email' in r:
             print(f"[AUTO-REPLY] Sending email to {r['email']}:\n{reply}")
-            # send_email(r['email'], reply, "")  # Optional: send only English
+            # send_email(r['email'], reply, "")
         elif 'social' in r:
             print(f"[AUTO-REPLY] Sending message to social link {r['social']}:\n{reply}")
-            # send_social_messages({platform_name: r['social']}, reply, "")
+            # send_social_messages({"platform": r['social']}, reply, "")
 
-        # Tracker update (e.g. mark as 'responded')
         print(f"[TRACKER] Marked {r['name']} as responded.")
