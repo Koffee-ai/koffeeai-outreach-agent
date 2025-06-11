@@ -1,59 +1,49 @@
+# Directory structure:
+# koffeeai-outreach-agent/
+# ├── streamlit_app.py
+# ├── scraper.py
+# ├── mailer.py
+# ├── social_messenger.py
+# ├── tracker.py
+# └── utils.py
+
+# --- streamlit_app.py ---
 import streamlit as st
-from PIL import Image
+from scraper import scrape_businesses
+from mailer import send_email
+from social_messenger import send_social_messages
+from tracker import update_tracker, display_tracker
+from utils import generate_outreach_texts
 
-# Load logo
-logo = Image.open("assets/logo.jpeg")  # Make sure it's a rounded image
+st.set_page_config(page_title="Koffee.ai Outreach Agent", page_icon="☕", layout="centered")
+st.title("Welcome to Koffee.ai Outreach Agent — Grow your business with AI ✨")
 
-# Page config
-st.set_page_config(page_title="Koffee.ai Outreach Agent", page_icon="☕", layout="wide", initial_sidebar_state="expanded")
+st.sidebar.header("📅 Campaign Setup")
+category = st.sidebar.text_input("Target Business Category", placeholder="e.g. cafes, gyms")
+location = st.sidebar.text_input("Location", placeholder="e.g. Kakinada")
+max_contacts = st.sidebar.slider("Max Businesses to Contact", 10, 100, 50)
+special_offer = st.sidebar.text_area("Optional Special Offer")
 
-# Sidebar
-with st.sidebar:
-    st.image(logo, width=150)
-    st.markdown("### Welcome to Koffee.ai Outreach Agent — Grow your business with AI 🚀")
-    
-    category = st.selectbox("Business Category", ["Cafe", "Gym", "Salon", "Boutique", "Restaurant", "Hospital", "Other"])
-    if category == "Other":
-        category = st.text_input("Enter your category")
+if st.sidebar.button("✉️ Launch Outreach"):
+    with st.spinner("Scraping businesses and preparing messages..."):
+        businesses = scrape_businesses(category, location, max_contacts)
+        for biz in businesses:
+            name = biz['name']
+            email = biz.get('email')
+            socials = biz.get('socials')
+            phone = biz.get('phone')
 
-    state = st.selectbox("Select State", ["Andhra Pradesh", "Karnataka", "Telangana", "Tamil Nadu", "Kerala"])
-    city = st.text_input("Enter City")
+            en_msg, local_msg = generate_outreach_texts(name, category, location, special_offer)
 
-    max_contacts = st.slider("Max Businesses to Reach", 10, 100, 50)
+            if email:
+                send_email(email, en_msg, local_msg)
+            if socials:
+                send_social_messages(socials, en_msg, local_msg)
 
-    language_option = st.selectbox("Preferred Language", ["Auto (Based on State)", "English", "Telugu", "Kannada", "Tamil", "Malayalam"])
+            update_tracker(name, email, socials)
 
-    special_offer = st.text_area("Special Offer (Optional)")
+        st.success("Outreach complete! Messages sent to selected businesses.")
 
-    start = st.button("🚀 Start Outreach", use_container_width=True)
-
-# Main content
-st.title("📢 Koffee.ai Smart Outreach Dashboard")
-
-if start:
-    st.info("🔍 Collecting businesses from social media and web directories...")
-    progress = st.progress(0)
-    status_text = st.empty()
-
-    # Simulated steps
-    import time
-    steps = ["Collecting data", "Scraping contacts", "Generating messages", "Sending outreach", "Waiting for responses"]
-    for i, step in enumerate(steps):
-        status_text.markdown(f"**{step}...**")
-        time.sleep(1.2)
-        progress.progress((i+1)/len(steps))
-
-    st.success("✅ Outreach Completed!")
-
-    st.markdown("### 📊 Outreach Summary")
-    st.dataframe({
-        "Business Name": ["ABC Cafe", "XYZ Gym"],
-        "Email Sent": ["Yes", "Yes"],
-        "WhatsApp Sent": ["Yes", "No"],
-        "DM Sent": ["No", "Yes"],
-        "Response Status": ["Pending", "Responded"],
-        "Meeting Booked": ["-", "✅"]
-    })
-
-    st.markdown("---")
-    st.caption("Made with ☕ by Koffee.ai — AI-Powered Growth")
+st.divider()
+st.header("📊 Outreach Tracker")
+display_tracker()
