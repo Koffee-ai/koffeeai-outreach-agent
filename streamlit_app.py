@@ -47,3 +47,21 @@ if st.sidebar.button("✉️ Launch Outreach"):
 st.divider()
 st.header("📊 Outreach Tracker")
 display_tracker()
+
+
+# --- social_messenger.py ---
+def send_social_messages(social_links, en_msg, local_msg):
+    for platform, link in social_links.items():
+        try:
+            # This is a stub — actual messaging via automation APIs requires access tokens and platform permission.
+            print(f"[SOCIAL] Sending message to {platform}: {link}")
+            print(f"  English:\n{en_msg}")
+            print(f"  Local:\n{local_msg}")
+
+            # NOTE:
+            # - Instagram/Facebook: Use Facebook Graph API (https://developers.facebook.com/docs/messenger-platform)
+            # - LinkedIn: LinkedIn API has limited DM support. Alternatives include Puppeteer, TexAu, or PhantomBuster.
+            # - For real usage, handle login/auth, rate limits, and message templates.
+
+        except Exception as e:
+            print(f"[SOCIAL ERROR] Failed to message on {platform}: {e}")
